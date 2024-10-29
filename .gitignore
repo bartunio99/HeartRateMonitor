@@ -1,3 +1,4 @@
 .vscode/
 Embedded/build/
 Embedded/sdkconfig
+Embedded/sdkconfig.old
