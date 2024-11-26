@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MobileApp</string>
+    <!--layout strings-->
+    <string name="Pulsometr">Pulsometr</string>
+    <string name="BT">Polacz z bluetooth</string>
+    <string name="Stats">Statystyki</string>
+    <string name="Exit">Wyjdz</string>
+    <string name="Search">Wyszukaj urzadzenie</string>
+    <string name="Pulse">Puls</string>
+    <string name="Undo">Powrot</string>
+    <string name="Connect">Polacz</string>
+    <string name="Scan">Skanuj</string>
+
+</resources>
