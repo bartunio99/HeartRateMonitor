@@ -17,17 +17,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MobileApp.databinding.BtLayoutBinding
+import java.util.UUID
 
 @SuppressLint("MissingPermission")
 class btClient :ComponentActivity() {
 
+    private val uuid: UUID = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB") // Standardowy UUID SPP
     val PERMISSION_CODE = 101
 
     private lateinit var binding: BtLayoutBinding
     private lateinit var adapter: recyclerAdapter
     private lateinit var bleScanner: btScan
     private val devices = mutableListOf<BluetoothDevice>()
-    private lateinit var bluetoothAdapter: BluetoothAdapter
+    private lateinit var btConnector: btConnect
+    private var selectedDevice: BluetoothDevice? = null
 
 
 
@@ -37,8 +40,12 @@ class btClient :ComponentActivity() {
         super.onCreate(savedInstanceState)
         binding = BtLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        btConnector = btConnect(this)
 
-        adapter = recyclerAdapter(devices)
+        adapter = recyclerAdapter(devices) { device ->
+            selectedDevice = device  // Przechowuj wybrane urządzenie
+            Toast.makeText(this, "Wybrano urządzenie: ${device.name ?: "Nieznane"}, ${device.address?: "Nieznane"}", Toast.LENGTH_SHORT).show()
+        }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@btClient)
             adapter = this@btClient.adapter
@@ -51,6 +58,7 @@ class btClient :ComponentActivity() {
         //define buttons
         val undoButton: Button = findViewById(R.id.undoBtn)
         val scanButton: Button = findViewById(R.id.scanBtn)
+        val connectButton: Button = findViewById(R.id.connectBtn)
 
 
         scanButton.setOnClickListener {
@@ -65,6 +73,16 @@ class btClient :ComponentActivity() {
 
         }
 
+        connectButton.setOnClickListener{
+            selectedDevice?.let { device ->
+                connectToDevice(device)
+            } ?: Toast.makeText(this, "Wybierz urządzenie przed połączeniem.", Toast.LENGTH_SHORT).show()
+
+            val pulseIntent = Intent(this, pulseClient::class.java)
+            startActivity(pulseIntent)
+        }
+
+
 
         undoButton.setOnClickListener {
             finish()
@@ -74,6 +92,7 @@ class btClient :ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         bleScanner.stopScanning()
+        btConnector.disconnect()
     }
 
 
@@ -82,7 +101,7 @@ class btClient :ComponentActivity() {
             // Requesting the permission
             ActivityCompat.requestPermissions(this@btClient, arrayOf(permission), requestCode)
         } else {
-            Toast.makeText(this@btClient, "Permission already granted", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this@btClient, "Permission already granted", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -107,16 +126,17 @@ class btClient :ComponentActivity() {
         }
     }
 
-    private fun checkBluetoothEnabled(): Boolean {
-        return if (!bluetoothAdapter.isEnabled) {
-            // Prompt the user to enable Bluetooth
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivity(enableBtIntent)
-            false
-        } else {
-            true
-        }
+    private fun connectToDevice(device: BluetoothDevice) {
+        btConnector.connectToDevice(device,
+            onSuccess = {
+                //Toast.makeText(this, "Połączono z urządzeniem ${device.name}", Toast.LENGTH_SHORT).show()
+            },
+            onError = { error ->
+                //Toast.makeText(this, "Błąd: $error", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
+
 
 
 

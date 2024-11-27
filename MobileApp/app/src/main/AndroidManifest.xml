@@ -40,6 +40,10 @@
             android:name=".btClient">
 
         </activity>
+        <activity
+            android:name=".pulseClient">
+
+        </activity>
 
     </application>
 

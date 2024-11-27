@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.annotation.RequiresPermission
 import com.MobileApp.databinding.ItemLayoutBinding
 
-class recyclerAdapter(private val devices: MutableList<BluetoothDevice>) : RecyclerView.Adapter<recyclerAdapter.DeviceViewHolder>() {
+class recyclerAdapter(
+    private val devices: MutableList<BluetoothDevice>,
+    private val onDeviceClick: (BluetoothDevice) -> Unit  // Funkcja do obsługi kliknięcia
+) : RecyclerView.Adapter<recyclerAdapter.DeviceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         val binding = ItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -20,6 +23,11 @@ class recyclerAdapter(private val devices: MutableList<BluetoothDevice>) : Recyc
         val device = devices[position]
         holder.binding.textViewTitle.text = device.name ?: "Unknown Device"
         holder.binding.textViewSubtitle.text = device.address
+
+        // Obsługa kliknięcia na urządzenie
+        holder.binding.root.setOnClickListener {
+            onDeviceClick(device)  // Wywołanie funkcji, która obsługuje kliknięcie
+        }
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +43,6 @@ class recyclerAdapter(private val devices: MutableList<BluetoothDevice>) : Recyc
         }
         notifyDataSetChanged()  // Powiadom adapter o zmianach
     }
-
 
     class DeviceViewHolder(val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root)
 }
