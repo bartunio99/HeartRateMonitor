@@ -5,10 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.TextView
 import androidx.annotation.RequiresPermission
-import com.MobileApp.R
-import kotlinx.coroutines.flow.MutableStateFlow
 import com.MobileApp.databinding.ItemLayoutBinding
 
 class recyclerAdapter(private val devices: MutableList<BluetoothDevice>) : RecyclerView.Adapter<recyclerAdapter.DeviceViewHolder>() {

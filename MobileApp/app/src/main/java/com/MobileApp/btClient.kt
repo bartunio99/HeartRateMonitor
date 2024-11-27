@@ -1,101 +1,106 @@
 package com.MobileApp
 
 import android.Manifest.permission.*
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresPermission
-import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.MobileApp.databinding.BtLayoutBinding
 
 @SuppressLint("MissingPermission")
-class btClient :ComponentActivity(){
-    val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
-    }
-    else {
-        arrayOf(
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
+class btClient :ComponentActivity() {
+
+    val PERMISSION_CODE = 101
+
+    private lateinit var binding: BtLayoutBinding
+    private lateinit var adapter: recyclerAdapter
+    private lateinit var bleScanner: btScan
+    private val devices = mutableListOf<BluetoothDevice>()
 
 
-    private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var deviceList: MutableList<BluetoothDevice>
-    private lateinit var adapter: ArrayAdapter<String>
 
-    val scanner = btScan(
-        context = this, // "this" odnosi się do kontekstu Activity
-        onDeviceFound = { result ->
-            // Kod, który zostanie wywołany, gdy urządzenie BLE zostanie znalezione
-
-            Log.d("Bluetooth", "Found device: ${result.device.name}")
-        },
-        onScanFailed = { errorCode ->
-            // Kod, który zostanie wywołany, gdy skanowanie zakończy się niepowodzeniem
-            Log.e("Bluetooth", "Scan failed with error code: $errorCode")
-        }
-    )
-
-
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.bt_layout)
+        binding = BtLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        adapter = recyclerAdapter(devices)
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@btClient)
+            adapter = this@btClient.adapter
+        }
+
+        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+        val bluetoothAdapter = bluetoothManager.adapter
+        bleScanner = btScan(bluetoothAdapter)
 
         //define buttons
         val undoButton: Button = findViewById(R.id.undoBtn)
         val scanButton: Button = findViewById(R.id.scanBtn)
 
 
+        scanButton.setOnClickListener {
+            checkPermission(BLUETOOTH_SCAN, PERMISSION_CODE)
+            checkPermission(BLUETOOTH_CONNECT,PERMISSION_CODE)
 
-        scanButton.setOnClickListener{
-            scanner.requestBluetoothPermission(requestPermissionLauncher)
-            scanner.startScan()
+            startBleScanning()
         }
 
-        undoButton.setOnClickListener{
+
+        undoButton.setOnClickListener {
             finish()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        scanner.stopScan()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        scanner.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        bleScanner.stopScanning()
     }
 
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
-            Toast.makeText(this, "hi!", Toast.LENGTH_SHORT).show()
-            // Jeśli uprawnienie zostało przyznane, rozpoczynamy skanowanie
-            scanner.startScan()
-
+    private fun checkPermission(permission: String, requestCode: Int) {
+        if (ContextCompat.checkSelfPermission(this@btClient, permission) == PackageManager.PERMISSION_DENIED) {
+            // Requesting the permission
+            ActivityCompat.requestPermissions(this@btClient, arrayOf(permission), requestCode)
         } else {
-            // Jeśli uprawnienie zostało odrzucone, pokazujemy komunikat
-            Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@btClient, "Permission already granted", Toast.LENGTH_SHORT).show()
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this@btClient, "Bt Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@btClient, "Bt Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun startBleScanning() {
+        bleScanner.startScanning { device ->
+            runOnUiThread {
+                adapter.updateDevices(listOf(device))
+            }
+        }
+    }
+
+
+
 }
+
