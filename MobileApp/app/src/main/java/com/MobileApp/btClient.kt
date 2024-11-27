@@ -7,14 +7,15 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.MobileApp.databinding.BtLayoutBinding
 
 @SuppressLint("MissingPermission")
@@ -26,6 +27,7 @@ class btClient :ComponentActivity() {
     private lateinit var adapter: recyclerAdapter
     private lateinit var bleScanner: btScan
     private val devices = mutableListOf<BluetoothDevice>()
+    private lateinit var bluetoothAdapter: BluetoothAdapter
 
 
 
@@ -52,10 +54,15 @@ class btClient :ComponentActivity() {
 
 
         scanButton.setOnClickListener {
-            checkPermission(BLUETOOTH_SCAN, PERMISSION_CODE)
-            checkPermission(BLUETOOTH_CONNECT,PERMISSION_CODE)
+            if (bluetoothAdapter.isEnabled) {
+                checkPermission(BLUETOOTH_SCAN, PERMISSION_CODE)
+                checkPermission(BLUETOOTH_CONNECT, PERMISSION_CODE)
+                startBleScanning()
+            }else{
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivity(enableBtIntent)
+            }
 
-            startBleScanning()
         }
 
 
@@ -99,6 +106,18 @@ class btClient :ComponentActivity() {
             }
         }
     }
+
+    private fun checkBluetoothEnabled(): Boolean {
+        return if (!bluetoothAdapter.isEnabled) {
+            // Prompt the user to enable Bluetooth
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivity(enableBtIntent)
+            false
+        } else {
+            true
+        }
+    }
+
 
 
 
