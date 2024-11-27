@@ -1,7 +1,5 @@
 package com.MobileApp
 
-import android.Manifest
-import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -20,17 +18,13 @@ class MainActivity : ComponentActivity() {
         val exitButton: Button = findViewById(R.id.exitBtn)
 
         //button listeners
-//        btButton.setOnClickListener{
-//            val btIntent = Intent(this, btConnect::class.java)
-//            startActivity(btIntent)
-//        }
+        btButton.setOnClickListener{
+            val btIntent = Intent(this, btClient::class.java)
+            startActivity(btIntent)
+        }
         exitButton.setOnClickListener {
             finish()
         }
-
-
-
-
 
 
 

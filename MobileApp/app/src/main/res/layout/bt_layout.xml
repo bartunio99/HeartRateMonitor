@@ -29,7 +29,7 @@
         android:text="@string/Undo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/connectBtn"/>
+        app:layout_constraintEnd_toStartOf="@id/scanBtn"/>
 
     <Button
         android:id="@+id/connectBtn"
@@ -40,9 +40,23 @@
         android:text="@string/Connect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/undoBtn"/>
+        app:layout_constraintStart_toEndOf="@id/scanBtn"
+        />
+
+    <Button
+        android:id="@+id/scanBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/Scan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/undoBtn"
+        app:layout_constraintEnd_toStartOf="@id/connectBtn"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="48sp"
