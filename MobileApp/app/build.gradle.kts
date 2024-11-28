@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.MobileApp"
+    namespace = "com.mobileapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.MobileApp"
+        applicationId = "com.mobileapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -33,7 +34,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures{
+    buildFeatures {
+        compose = true
         viewBinding = true
     }
 }
@@ -41,13 +43,23 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1") // Dla pracy z cyklem życia
-    implementation("androidx.activity:activity-ktx:1.6.0") // Upewnij się, że masz tę zależność
-    implementation ("com.android.support.constraint:constraint-layout:1.0.2")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.activity:activity-ktx:1.7.0")  // Kiedy używasz funkcji `viewModels()` w Activity
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") // Kiedy używasz ViewModel w aplikacji
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

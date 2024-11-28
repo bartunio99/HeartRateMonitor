@@ -1,6 +1,7 @@
-package com.MobileApp
+package com.mobileapp
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
@@ -8,11 +9,17 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.util.Log
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import java.io.Serializable
 import java.util.*
+import kotlin.properties.Delegates
 
-class btConnect(private val context: Context) {
+class btConnect(private val context: Context): Serializable {
 
     private var bluetoothGatt: BluetoothGatt? = null
+
 
     // Funkcja do połączenia z urządzeniem
     @SuppressLint("MissingPermission")
@@ -60,7 +67,8 @@ class btConnect(private val context: Context) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     characteristic?.let {
                         Log.d("btConnect", "Odczytano charakterystykę: ${it.uuid}, wartość: ${it.value?.joinToString(", ")}")
-                        // Tutaj możesz przetworzyć odczytane dane, np. zaktualizować UI
+
+                        pulseSingleton.updatePulseValue(byteArrayToInt(characteristic.value))
                     }
                 } else {
                     Log.e("btConnect", "Błąd odczytu charakterystyki, status=$status")
@@ -72,20 +80,29 @@ class btConnect(private val context: Context) {
     // Funkcja do odczytu charakterystyki tętna (np. z urządzenia HRM)
     @SuppressLint("MissingPermission")
     private fun readHeartRateCharacteristic(gatt: BluetoothGatt?) {
-        val heartRateServiceUuid = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")  // UUID dla usługi tętna
-        val heartRateMeasurementUuid = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")  // UUID dla charakterystyki tętna
+        val heartRateServiceUuid =
+            UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")  // UUID dla usługi tętna
+        val heartRateMeasurementUuid =
+            UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")  // UUID dla charakterystyki tętna
 
         val service = gatt?.getService(heartRateServiceUuid)
         val characteristic = service?.getCharacteristic(heartRateMeasurementUuid)
 
-        if (characteristic != null) {
-            // Próbujemy odczytać charakterystykę tętna
-            gatt.readCharacteristic(characteristic)
-            Log.d("btConnect", "Próba odczytu charakterystyki tętna.")
-        } else {
-            Log.e("btConnect", "Nie znaleziono charakterystyki tętna.")
-        }
+        Thread {
+            while (true) {
+                if (characteristic != null) {
+                    // Próbujemy odczytać charakterystykę tętna
+                    gatt.readCharacteristic(characteristic)
+                    Log.d("btConnect", "Próba odczytu charakterystyki tętna.")
+                } else {
+                    Log.e("btConnect", "Nie znaleziono charakterystyki tętna.")
+                    break
+                }
+                Thread.sleep(5000)  // Przerwa 5 sekund przed kolejnym odczytem
+            }
+        }.start()
     }
+
 
     // Funkcja do rozłączenia urządzenia
     @SuppressLint("MissingPermission")
@@ -94,4 +111,21 @@ class btConnect(private val context: Context) {
         bluetoothGatt = null
         Log.d("btConnect", "Połączenie rozłączone.")
     }
+
+    //konwersja danych na inty
+    fun byteArrayToInt(bytes: ByteArray): Int {
+        require(bytes.size == 2) { "ByteArray must be 2 bytes long" }
+        return ((bytes[0].toInt() and 0xFF) shl 8) or
+                (bytes[1].toInt() and 0xFF)
+    }
+
+    fun getPulse(newValue: Int): Int{
+        return newValue
+    }
+
+
+
+
 }
+
+
