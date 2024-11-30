@@ -1,4 +1,4 @@
-package com.MobileApp
+package com.mobileapp
 
 import android.Manifest
 import android.Manifest.permission.BLUETOOTH_SCAN

@@ -1,4 +1,4 @@
-package com.MobileApp
+package com.mobileapp
 
 import android.content.Intent
 import android.os.Bundle

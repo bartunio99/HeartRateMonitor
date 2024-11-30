@@ -1,4 +1,4 @@
-package com.MobileApp
+package com.mobileapp
 
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.bluetooth.BluetoothDevice
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.annotation.RequiresPermission
-import com.MobileApp.databinding.ItemLayoutBinding
+import com.mobileapp.databinding.ItemLayoutBinding
 
 class recyclerAdapter(
     private val devices: MutableList<BluetoothDevice>,

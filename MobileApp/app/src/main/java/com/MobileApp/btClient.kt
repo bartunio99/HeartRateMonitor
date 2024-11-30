@@ -1,4 +1,4 @@
-package com.MobileApp
+package com.mobileapp
 
 import android.Manifest.permission.*
 import android.os.Build
@@ -16,7 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.MobileApp.databinding.BtLayoutBinding
+import com.mobileapp.databinding.BtLayoutBinding
 import java.util.UUID
 
 @SuppressLint("MissingPermission")
@@ -68,7 +68,9 @@ class btClient :ComponentActivity() {
                 startBleScanning()
             }else{
                 val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                enableBtIntent.putExtra("connector", btConnector)
                 startActivity(enableBtIntent)
+
             }
 
         }
