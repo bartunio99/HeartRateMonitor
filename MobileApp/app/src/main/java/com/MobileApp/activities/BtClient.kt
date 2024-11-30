@@ -1,4 +1,4 @@
-package com.mobileapp
+package com.mobileapp.activities
 
 import android.Manifest.permission.*
 import android.os.Build
@@ -16,7 +16,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mobileapp.R
+import com.mobileapp.btConnect
+import com.mobileapp.btScan
 import com.mobileapp.databinding.BtLayoutBinding
+import com.mobileapp.recyclerAdapter
 import java.util.UUID
 
 @SuppressLint("MissingPermission")

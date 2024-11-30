@@ -9,16 +9,22 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.util.Log
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.mobileapp.database.pulseDatabase
 import java.io.Serializable
+import java.time.Instant
+import java.time.LocalDate
 import java.util.*
-import kotlin.properties.Delegates
 
 class btConnect(private val context: Context): Serializable {
 
     private var bluetoothGatt: BluetoothGatt? = null
+    private var pulseData: MutableList<Int> = mutableListOf<Int>()
+    val date: LocalDate?= null
+    val time: Instant?= null
+
+    val db = pulseDatabase.getInstance(context)
+    val sessionDao = db.sessionDao()
+    val pulseDataDao = db.pulseDataDao()
 
 
     // Funkcja do połączenia z urządzeniem
@@ -68,7 +74,10 @@ class btConnect(private val context: Context): Serializable {
                     characteristic?.let {
                         Log.d("btConnect", "Odczytano charakterystykę: ${it.uuid}, wartość: ${it.value?.joinToString(", ")}")
 
-                        pulseSingleton.updatePulseValue(byteArrayToInt(characteristic.value))
+                        val pulse = byteArrayToInt(characteristic.value)
+                        pulseSingleton.updatePulseValue(pulse)
+                        pulseData.add(pulse)
+
                     }
                 } else {
                     Log.e("btConnect", "Błąd odczytu charakterystyki, status=$status")
@@ -118,14 +127,6 @@ class btConnect(private val context: Context): Serializable {
         return ((bytes[0].toInt() and 0xFF) shl 8) or
                 (bytes[1].toInt() and 0xFF)
     }
-
-    fun getPulse(newValue: Int): Int{
-        return newValue
-    }
-
-
-
-
 }
 
 

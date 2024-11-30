@@ -1,14 +1,14 @@
-package com.mobileapp
+package com.mobileapp.activities
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
-import androidx.lifecycle.Observer
+import com.mobileapp.R
+import com.mobileapp.btConnect
+import com.mobileapp.pulseSingleton
 
 class pulseClient: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
