@@ -13,6 +13,9 @@ interface sessionDao{
     @Update
     suspend fun updateSession(session: Session)
 
+    @Query("DELETE FROM SESSION WHERE SESSION_ID = :session_id ")
+    suspend fun deleteRecord(session_id: Int)
+
     @Query("SELECT * FROM SESSION")
     suspend fun getAllSessions(): List<Session>
 }

@@ -20,11 +20,11 @@ class MainActivity : ComponentActivity() {
 
         //button listeners
         btButton.setOnClickListener{
-            val btIntent = Intent(this, btClient::class.java)
+            val btIntent = Intent(this, BtClient::class.java)
             startActivity(btIntent)
         }
         statButton.setOnClickListener{
-            val statIntent = Intent(this, statActivity::class.java)
+            val statIntent = Intent(this, StatActivity::class.java)
             startActivity(statIntent)
         }
 

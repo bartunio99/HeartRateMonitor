@@ -12,29 +12,31 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobileapp.R
-import com.mobileapp.btConnect
-import com.mobileapp.btScan
+import com.mobileapp.bluetooth.btConnect
+import com.mobileapp.bluetooth.btScan
 import com.mobileapp.databinding.BtLayoutBinding
-import com.mobileapp.recyclerAdapter
+import com.mobileapp.adapters.btAdapter
 import java.util.UUID
 
 @SuppressLint("MissingPermission")
-class btClient :ComponentActivity() {
+class BtClient :ComponentActivity() {
 
     private val uuid: UUID = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB") // Standardowy UUID SPP
     val PERMISSION_CODE = 101
 
     private lateinit var binding: BtLayoutBinding
-    private lateinit var adapter: recyclerAdapter
+    private lateinit var adapter: btAdapter
     private lateinit var bleScanner: btScan
     private val devices = mutableListOf<BluetoothDevice>()
     private lateinit var btConnector: btConnect
     private var selectedDevice: BluetoothDevice? = null
+
 
 
 
@@ -46,13 +48,15 @@ class btClient :ComponentActivity() {
         setContentView(binding.root)
         btConnector = btConnect(this)
 
-        adapter = recyclerAdapter(devices) { device ->
+
+
+        adapter = btAdapter(devices) { device ->
             selectedDevice = device  // Przechowuj wybrane urządzenie
             Toast.makeText(this, "Wybrano urządzenie: ${device.name ?: "Nieznane"}, ${device.address?: "Nieznane"}", Toast.LENGTH_SHORT).show()
         }
         binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@btClient)
-            adapter = this@btClient.adapter
+            layoutManager = LinearLayoutManager(this@BtClient)
+            adapter = this@BtClient.adapter
         }
 
         val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
@@ -72,20 +76,19 @@ class btClient :ComponentActivity() {
                 startBleScanning()
             }else{
                 val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                enableBtIntent.putExtra("connector", btConnector)
                 startActivity(enableBtIntent)
-
             }
 
         }
 
         connectButton.setOnClickListener{
             selectedDevice?.let { device ->
+
                 connectToDevice(device)
             } ?: Toast.makeText(this, "Wybierz urządzenie przed połączeniem.", Toast.LENGTH_SHORT).show()
 
-            val pulseIntent = Intent(this, pulseClient::class.java)
-            startActivity(pulseIntent)
+            val pulseIntent = Intent(this, PulseClient::class.java)
+            startPulseClientForResult.launch(pulseIntent)
         }
 
 
@@ -95,17 +98,17 @@ class btClient :ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
         super.onDestroy()
         bleScanner.stopScanning()
-        btConnector.disconnect()
     }
 
 
     private fun checkPermission(permission: String, requestCode: Int) {
-        if (ContextCompat.checkSelfPermission(this@btClient, permission) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(this@BtClient, permission) == PackageManager.PERMISSION_DENIED) {
             // Requesting the permission
-            ActivityCompat.requestPermissions(this@btClient, arrayOf(permission), requestCode)
+            ActivityCompat.requestPermissions(this@BtClient, arrayOf(permission), requestCode)
         } else {
             //Toast.makeText(this@btClient, "Permission already granted", Toast.LENGTH_SHORT).show()
         }
@@ -117,9 +120,9 @@ class btClient :ComponentActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this@btClient, "Bt Permission Granted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@BtClient, "Bt Permission Granted", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this@btClient, "Bt Permission Denied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@BtClient, "Bt Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -142,6 +145,21 @@ class btClient :ComponentActivity() {
             }
         )
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val startPulseClientForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == 0) {
+            // Wynik, gdy PulseClient zakończy się poprawnie
+            btConnector.disconnect()
+
+            Toast.makeText(this, "PulseClient zakończone", Toast.LENGTH_SHORT).show()
+        } else {
+            // Jeśli PulseClient zakończy się z innym wynikiem
+            Toast.makeText(this, "PulseClient zakończone z błędem ${result.resultCode}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
 
 

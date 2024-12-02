@@ -1,16 +1,20 @@
 package com.mobileapp.activities
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.annotation.RequiresApi
 import com.mobileapp.R
-import com.mobileapp.btConnect
-import com.mobileapp.pulseSingleton
+import com.mobileapp.objects.pulseSingleton
 
-class pulseClient: ComponentActivity() {
+class PulseClient: ComponentActivity() {
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.pulse_layout)
@@ -19,11 +23,9 @@ class pulseClient: ComponentActivity() {
 
         val pulseDisplay: TextView = findViewById(R.id.pulseData)
         val exitButton: Button = findViewById(R.id.undoBtn)
-        val connector = intent.getSerializableExtra("connector") as? btConnect
 
         exitButton.setOnClickListener{
             finish()
-            connector!!.disconnect()
         }
 
         pulseSingleton.addListener { newPulseValue ->
@@ -39,7 +41,6 @@ class pulseClient: ComponentActivity() {
 
 
     override fun onDestroy() {
-
         super.onDestroy()
     }
 }

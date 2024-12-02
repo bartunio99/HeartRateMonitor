@@ -1,4 +1,4 @@
-package com.mobileapp
+package com.mobileapp.objects
 
 object pulseSingleton{
     var pulseValue: Int = 0

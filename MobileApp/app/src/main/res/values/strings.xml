@@ -10,5 +10,11 @@
     <string name="Undo">Powrot</string>
     <string name="Connect">Polacz</string>
     <string name="Scan">Skanuj</string>
-
+    <string name="SeeStats">Zobacz statystyki</string>
+    <string name="MaxPulse">Maksymalny puls</string>
+    <string name="MinPulse">Minimalny puls</string>
+    <string name="AvgPulse">Sredni puls</string>
+    <string name="Time">Czas [ms]</string>
+    <string name="PulseBPM">Puls [BPM] </string>
+    <string name="Delete">Usuń sesje </string>
 </resources>

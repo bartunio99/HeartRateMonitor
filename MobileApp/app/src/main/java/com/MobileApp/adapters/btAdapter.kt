@@ -1,4 +1,4 @@
-package com.mobileapp
+package com.mobileapp.adapters
 
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.bluetooth.BluetoothDevice
@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.annotation.RequiresPermission
 import com.mobileapp.databinding.ItemLayoutBinding
 
-class recyclerAdapter(
+class btAdapter(
     private val devices: MutableList<BluetoothDevice>,
     private val onDeviceClick: (BluetoothDevice) -> Unit  // Funkcja do obsługi kliknięcia
-) : RecyclerView.Adapter<recyclerAdapter.DeviceViewHolder>() {
+) : RecyclerView.Adapter<btAdapter.DeviceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         val binding = ItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)

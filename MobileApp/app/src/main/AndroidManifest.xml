@@ -37,15 +37,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.btClient">
+            android:name=".activities.BtClient">
 
         </activity>
         <activity
-            android:name=".activities.pulseClient">
+            android:name=".activities.PulseClient">
 
         </activity>
         <activity
-            android:name=".activities.statActivity">
+            android:name=".activities.StatActivity">
+
+        </activity>
+
+        <activity
+            android:name=".activities.StatViewActivity">
 
         </activity>
 
