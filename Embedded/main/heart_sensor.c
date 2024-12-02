@@ -22,7 +22,7 @@ void analog_transmission(){
     while(1){
         uint16_t data = adc1_get_raw(ADC_CHANNEL);
         pulse = data;
-        printf("Puls: %d\n", data);
+        //printf("Puls: %d\n", data);
         vTaskDelay(10);
     }
 

@@ -1,4 +1,4 @@
-package com.MobileApp
+package com.mobileapp.adapters
 
 data class ListItem(
     val title: String,

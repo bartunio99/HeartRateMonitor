@@ -1,10 +1,11 @@
-package com.MobileApp
+package com.mobileapp.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.mobileapp.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,9 +20,14 @@ class MainActivity : ComponentActivity() {
 
         //button listeners
         btButton.setOnClickListener{
-            val btIntent = Intent(this, btClient::class.java)
+            val btIntent = Intent(this, BtClient::class.java)
             startActivity(btIntent)
         }
+        statButton.setOnClickListener{
+            val statIntent = Intent(this, StatActivity::class.java)
+            startActivity(statIntent)
+        }
+
         exitButton.setOnClickListener {
             finish()
         }
