@@ -110,7 +110,7 @@ class BtClient :ComponentActivity() {
             // Requesting the permission
             ActivityCompat.requestPermissions(this@BtClient, arrayOf(permission), requestCode)
         } else {
-            //Toast.makeText(this@btClient, "Permission already granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show()
         }
     }
 

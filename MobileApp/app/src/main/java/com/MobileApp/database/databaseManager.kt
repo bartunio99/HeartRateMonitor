@@ -1,16 +1,11 @@
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.viewModelScope
 import com.mobileapp.database.PulseData
 import com.mobileapp.database.Session
 import com.mobileapp.database.pulseDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
-import java.util.*
 
 class databaseManager(private val context: Context) {
 
